@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Title Maker Web App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 25px 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .video-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .controls button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #videoElement {
+            width: 100%;
+            display: block;
+        }
+
+        .text-overlay {
+            position: absolute;
+            pointer-events: none;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            padding: 5px;
+            transition: all 0.3s;
+        }
+
+        .editor-panel {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4f46e5;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #textColor {
+            width: 50px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .preview-section {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-section h3 {
+            margin-bottom: 10px;
+            color: #475569;
+        }
+
+        .text-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #4f46e5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .text-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .text-item-content {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .text-item-time {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .time-display {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .export-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        #exportBtn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #exportBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .drag-handle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: move;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            pointer-events: all;
+        }
+
+        .resize-handle {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 15px;
+            height: 15px;
+            cursor: se-resize;
+            background: rgba(0,0,0,0.5);
+            pointer-events: all;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Video Title Maker Web App</h1>
+            <p>Add text overlays to your video</p>
+        </div>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="controls">
+                    <input type="file" id="videoUpload" accept="video/*" style="display: none;">
+                    <button onclick="document.getElementById('videoUpload').click()">📁 Load Video</button>
+                    <button onclick="playPause()">⏯️ Play/Pause</button>
+                    <button onclick="seekBackward()">⏪ 10s</button>
+                    <button onclick="seekForward()">⏩ 10s</button>
+                    <button onclick="addText()">➕ Add Text</button>
+                </div>
+
+                <div class="video-container">
+                    <video id="videoElement" controls>
+                        <source id="videoSource" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                    </video>
+                    <div id="textOverlayContainer"></div>
+                </div>
+
+                <div class="time-display">
+                    <span id="currentTime">00:00</span> / 
+                    <span id="duration">00:00</span>
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-value">
+                        <span>Start: <span id="startTimeDisplay">00:00</span></span>
+                        <span>End: <span id="endTimeDisplay">00:00</span></span>
+                    </div>
+                    <input type="range" id="timeRange" min="0" max="100" value="0" step="0.1" style="width: 100%">
+                </div>
+            </div>
+
+            <div class="editor-panel">
+                <div class="form-group">
+                    <label for="textContent">Text:</label>
+                    <input type="text" id="textContent" placeholder="Type your text here..." value="Sample Text">
+                </div>
+
+                <div class="form-group">
+                    <label for="fontSize">Font Size:</label>
+                    <input type="range" id="fontSize" min="10" max="72" value="24">
+                    <span id="fontSizeValue">24px</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Text Color:</label>
+                    <div class="color-picker">
+                        <input type="color" id="textColor" value="#ffffff">
+                        <select id="textStyle">
+                            <option value="normal">Normal</option>
+                            <option value="bold">Bold</option>
+                            <option value="italic">Italic</option>
+                            <option value="bold italic">Bold + Italic</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="startTime">Start Time (seconds):</label>
+                    <input type="number" id="startTime" min="0" step="0.1" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="durationTime">Duration (seconds):</label>
+                    <input type="number" id="durationTime" min="0.1" step="0.1" value="5">
+                </div>
+
+                <div class="form-group">
+                    <label for="textPosition">Position:</label>
+                    <select id="textPosition">
+                        <option value="center">Center</option>
+                        <option value="top">Top</option>
+                        <option value="bottom">Bottom</option>
+                        <option value="top-left">Top Left</option>
+                        <option value="top-right">Top Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="bottom-right">Bottom Right</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div id="customPosition" style="display: none;">
+                    <div class="form-group">
+                        <label>Custom Position:</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input type="number" id="posX" placeholder="X (px)" value="100">
+                            <input type="number" id="posY" placeholder="Y (px)" value="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Added Texts:</h3>
+                    <div id="textList"></div>
+                </div>
+
+                <div class="export-section">
+                    <button id="exportBtn">📤 Export Video with Texts</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const videoElement = document.getElementById('videoElement');
+        const videoUpload = document.getElementById('videoUpload');
+        const textOverlayContainer = document.getElementById('textOverlayContainer');
+        const textList = document.getElementById('textList');
+        const timeRange = document.getElementById('timeRange');
+        
+        // Array to store text objects
+        let textElements = [];
+        let selectedTextId = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragOffset = { x: 0, y: 0 };
+        let currentVideoTime = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            setupEventListeners();
+            updateTimeDisplay();
+        }
+
+        function setupEventListeners() {
+            // Video upload
+            videoUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const videoURL = URL.createObjectURL(file);
+                    videoElement.src = videoURL;
+                    videoElement.load();
+                    
+                    // Clear old texts
+                    textElements = [];
+                    updateTextList();
+                    textOverlayContainer.innerHTML = '';
+                    selectedTextId = null;
+                }
+            });
+
+            // Time controls
+            videoElement.addEventListener('loadedmetadata', function() {
+                timeRange.max = videoElement.duration;
+                updateTimeDisplay();
+            });
+
+            videoElement.addEventListener('timeupdate', function() {
+                currentVideoTime = videoElement.currentTime;
+                timeRange.value = currentVideoTime;
+                updateTimeDisplay();
+                updateTextVisibility();
+            });
+
+            // Slider control
+            timeRange.addEventListener('input', function() {
+                videoElement.currentTime = this.value;
+                updateTimeDisplay();
+            });
+
+            // Position control
+            document.getElementById('textPosition').addEventListener('change', function() {
+                const customPosDiv = document.getElementById('customPosition');
+                customPosDiv.style.display = this.value === 'custom' ? 'block' : 'none';
+                
+                if (selectedTextId) {
+                    updateSelectedTextPosition();
+                }
+            });
+
+            // Update font size display
+            document.getElementById('fontSize').addEventListener('input', function() {
+                document.getElementById('fontSizeValue').textContent = this.value + 'px';
+                if (selectedTextId) {
+                    updateSelectedTextStyle();
+                }
+            });
+
+            // Real-time updates for all controls - FIXED: Only update selected text
+            const styleControls = ['textContent', 'textColor', 'textStyle', 'startTime', 'durationTime', 'posX', 'posY'];
+            styleControls.forEach(controlId => {
+                const element = document.getElementById(controlId);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        if (selectedTextId) {
+                            updateSelectedTextElement();
+                        }
+                    });
+                }
+            });
+        }
+
+        function addText() {
+            const textContent = document.getElementById('textContent').value;
+            if (!textContent.trim()) return;
+
+            const textId = 'text-' + Date.now();
+            const startTime = parseFloat(document.getElementById('startTime').value) || 0;
+            const duration = parseFloat(document.getElementById('durationTime').value) || 5;
+            
+            console.log('Adding text:', textContent, 'Start:', startTime, 'Duration:', duration);
+            
+            // Create text element
+            const textDiv = document.createElement('div');
+            textDiv.className = 'text-overlay';
+            textDiv.id = textId;
+            textDiv.dataset.start = startTime;
+            textDiv.dataset.duration = duration;
+            textDiv.textContent = textContent;
+            
+            // Apply initial style
+            applyTextStyle(textDiv);
+            applyTextPosition(textDiv);
+            
+            // Add drag and resize handles
+            addDragHandles(textDiv);
+            
+            // Add to container
+            textOverlayContainer.appendChild(textDiv);
+            
+            // Wait for layout and capture position
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    // Get position relative to container
+                    const containerRect = textOverlayContainer.getBoundingClientRect();
+                    const textRect = textDiv.getBoundingClientRect();
+                    
+                    let x = textRect.left - containerRect.left;
+                    let y = textRect.top - containerRect.top;
+                    
+                    console.log(`Position captured: x=${x.toFixed(0)}, y=${y.toFixed(0)}, w=${textRect.width.toFixed(0)}, h=${textRect.height.toFixed(0)}`);
+                    
+                    // Store text data
+                    const textObj = {
+                        id: textId,
+                        element: textDiv,
+                        startTime: startTime,
+                        duration: duration,
+                        content: textContent,
+                        x: x,
+                        y: y,
+                        width: textRect.width,
+                        height: textRect.height,
+                        fontSize: parseInt(document.getElementById('fontSize').value) || 24,
+                        color: document.getElementById('textColor').value || '#ffffff',
+                        fontWeight: document.getElementById('textStyle').value.includes('bold') ? 'bold' : 'normal',
+                        fontStyle: document.getElementById('textStyle').value.includes('italic') ? 'italic' : 'normal',
+                        position: document.getElementById('textPosition').value,
+                        posX: parseInt(document.getElementById('posX').value) || 100,
+                        posY: parseInt(document.getElementById('posY').value) || 100
+                    };
+                    
+                    textElements.push(textObj);
+                    console.log('✓ Text added to array. Total texts:', textElements.length);
+                    
+                    // Select this text
+                    selectText(textId);
+                    
+                    // Update list
+                    updateTextList();
+                    
+                    // Update visibility
+                    updateTextVisibility();
+                });
+            });
+        }
+
+        function applyTextStyle(textElement) {
+            const fontSize = document.getElementById('fontSize').value;
+            const textColor = document.getElementById('textColor').value;
+            const textStyle = document.getElementById('textStyle').value;
+            
+            textElement.style.fontSize = fontSize + 'px';
+            textElement.style.color = textColor;
+            textElement.style.fontStyle = textStyle.includes('italic') ? 'italic' : 'normal';
+            textElement.style.fontWeight = textStyle.includes('bold') ? 'bold' : 'normal';
+        }
+
+        function applyTextPosition(textElement) {
+            const position = document.getElementById('textPosition').value;
+            const posX = parseInt(document.getElementById('posX').value) || 0;
+            const posY = parseInt(document.getElementById('posY').value) || 0;
+            
+            // Clear all position styles
+            textElement.style.left = '';
+            textElement.style.top = '';
+            textElement.style.right = '';
+            textElement.style.bottom = '';
+            textElement.style.transform = '';
+            
+            switch(position) {
+                case 'center':
+                    textElement.style.left = '50%';
+                    textElement.style.top = '50%';
+                    textElement.style.transform = 'translate(-50%, -50%)';
+                    break;
+                case 'top':
+                    textElement.style.left = '50%';
+                    textElement.style.top = '20px';
+                    textElement.style.transform = 'translateX(-50%)';
+                    break;
+                case 'bottom':
+                    textElement.style.left = '50%';
+                    textElement.style.bottom = '20px';
+                    textElement.style.transform = 'translateX(-50%)';
+                    break;
+                case 'top-left':
+                    textElement.style.left = '20px';
+                    textElement.style.top = '20px';
+                    break;
+                case 'top-right':
+                    textElement.style.right = '20px';
+                    textElement.style.top = '20px';
+                    break;
+                case 'bottom-left':
+                    textElement.style.left = '20px';
+                    textElement.style.bottom = '20px';
+                    break;
+                case 'bottom-right':
+                    textElement.style.right = '20px';
+                    textElement.style.bottom = '20px';
+                    break;
+                case 'custom':
+                    textElement.style.left = posX + 'px';
+                    textElement.style.top = posY + 'px';
+                    break;
+            }
+        }
+
+        function addDragHandles(textElement) {
+            // Drag handle
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'drag-handle';
+            dragHandle.textContent = '↔';
+            dragHandle.addEventListener('mousedown', startDrag);
+            
+            // Resize handle
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            resizeHandle.addEventListener('mousedown', startResize);
+            
+            textElement.appendChild(dragHandle);
+            textElement.appendChild(resizeHandle);
+            
+            // Allow clicking on text to select
+            textElement.style.pointerEvents = 'all';
+            textElement.addEventListener('click', function(e) {
+                if (e.target !== dragHandle && e.target !== resizeHandle) {
+                    selectText(textElement.id);
+                }
+                e.stopPropagation();
+            });
+        }
+
+        function selectText(textId) {
+            // Remove previous selection
+            if (selectedTextId) {
+                const prevElement = document.getElementById(selectedTextId);
+                if (prevElement) {
+                    prevElement.style.outline = 'none';
+                }
+            }
+            
+            // Select new text
+            selectedTextId = textId;
+            const textElement = document.getElementById(textId);
+            if (textElement) {
+                textElement.style.outline = '2px dashed #4f46e5';
+                
+                // Find text data
+                const textData = textElements.find(t => t.id === textId);
+                if (textData) {
+                    // Fill controls with selected text values
+                    document.getElementById('textContent').value = textData.content;
+                    document.getElementById('startTime').value = textData.startTime;
+                    document.getElementById('durationTime').value = textData.duration;
+                    document.getElementById('fontSize').value = textData.fontSize;
+                    document.getElementById('fontSizeValue').textContent = textData.fontSize + 'px';
+                    document.getElementById('textColor').value = textData.color;
+                    
+                    // Set text style
+                    let style = 'normal';
+                    if (textData.fontWeight === 'bold' && textData.fontStyle === 'italic') style = 'bold italic';
+                    else if (textData.fontWeight === 'bold') style = 'bold';
+                    else if (textData.fontStyle === 'italic') style = 'italic';
+                    document.getElementById('textStyle').value = style;
+                    
+                    // Set position
+                    document.getElementById('textPosition').value = textData.position || 'custom';
+                    document.getElementById('posX').value = Math.round(textData.x);
+                    document.getElementById('posY').value = Math.round(textData.y);
+                    
+                    // Show/hide custom position
+                    document.getElementById('customPosition').style.display = 
+                        (textData.position === 'custom') ? 'block' : 'none';
+                }
+            }
+        }
+
+        function updateSelectedTextStyle() {
+            if (!selectedTextId) return;
+            
+            const textElement = document.getElementById(selectedTextId);
+            if (textElement) {
+                applyTextStyle(textElement);
+                
+                // Update stored data
+                const textData = textElements.find(t => t.id === selectedTextId);
+                if (textData) {
+                    textData.fontSize = parseInt(document.getElementById('fontSize').value) || 24;
+                    textData.color = document.getElementById('textColor').value;
+                    const style = document.getElementById('textStyle').value;
+                    textData.fontWeight = style.includes('bold') ? 'bold' : 'normal';
+                    textData.fontStyle = style.includes('italic') ? 'italic' : 'normal';
+                }
+            }
+        }
+
+        function updateSelectedTextPosition() {
+            if (!selectedTextId) return;
+            
+            const textElement = document.getElementById(selectedTextId);
+            if (textElement) {
+                applyTextPosition(textElement);
+                
+                // Update stored data
+                const textData = textElements.find(t => t.id === selectedTextId);
+                if (textData) {
+                    textData.position = document.getElementById('textPosition').value;
+                    
+                    // Capture new position after layout
+                    requestAnimationFrame(() => {
+                        const containerRect = textOverlayContainer.getBoundingClientRect();
+                        const textRect = textElement.getBoundingClientRect();
+                        
+                        textData.x = textRect.left - containerRect.left;
+                        textData.y = textRect.top - containerRect.top;
+                        textData.width = textRect.width;
+                        textData.height = textRect.height;
+                        
+                        console.log(`Position updated for ${textData.content}: x=${textData.x.toFixed(0)}, y=${textData.y.toFixed(0)}`);
+                    });
+                }
+            }
+        }
+
+        function updateSelectedTextElement() {
+            if (!selectedTextId) return;
+            
+            const textElement = document.getElementById(selectedTextId);
+            if (!textElement) return;
+            
+            const textData = textElements.find(t => t.id === selectedTextId);
+            if (!textData) return;
+            
+            // Update content
+            const newContent = document.getElementById('textContent').value;
+            textData.content = newContent;
+            
+            // Update timing
+            textData.startTime = parseFloat(document.getElementById('startTime').value) || 0;
+            textData.duration = parseFloat(document.getElementById('durationTime').value) || 5;
+            
+            // Update element
+            while (textElement.firstChild) {
+                textElement.removeChild(textElement.firstChild);
+            }
+            textElement.textContent = newContent;
+            textElement.dataset.start = textData.startTime;
+            textElement.dataset.duration = textData.duration;
+            
+            // Re-add handles
+            addDragHandles(textElement);
+            
+            // Apply style and position
+            applyTextStyle(textElement);
+            
+            // Update position based on stored position or current position setting
+            if (textData.position === 'custom') {
+                // Use stored x,y for custom position
+                textElement.style.left = textData.x + 'px';
+                textElement.style.top = textData.y + 'px';
+                textElement.style.right = '';
+                textElement.style.bottom = '';
+                textElement.style.transform = 'none';
+            } else {
+                applyTextPosition(textElement);
+            }
+            
+            // Update list
+            updateTextList();
+        }
+
+        function updateTextVisibility() {
+            textElements.forEach(text => {
+                const shouldShow = currentVideoTime >= text.startTime && 
+                                 currentVideoTime <= text.startTime + text.duration;
+                if (text.element) {
+                    text.element.style.display = shouldShow ? 'block' : 'none';
+                }
+            });
+        }
+
+        function updateTextList() {
+            textList.innerHTML = '';
+            textElements.forEach((text, index) => {
+                const item = document.createElement('div');
+                item.className = 'text-item';
+                item.innerHTML = `
+                    <div class="text-item-header">
+                        <span>Text #${index + 1}</span>
+                        <button class="delete-btn" onclick="deleteText('${text.id}')">×</button>
+                    </div>
+                    <div class="text-item-content">${text.content}</div>
+                    <div class="text-item-time">
+                        ${formatTime(text.startTime)} - ${formatTime(text.startTime + text.duration)}
+                    </div>
+                `;
+                item.addEventListener('click', () => selectText(text.id));
+                textList.appendChild(item);
+            });
+        }
+
+        function deleteText(textId) {
+            const index = textElements.findIndex(t => t.id === textId);
+            if (index !== -1) {
+                if (textElements[index].element) {
+                    textElements[index].element.remove();
+                }
+                textElements.splice(index, 1);
+                
+                if (selectedTextId === textId) {
+                    selectedTextId = null;
+                }
+                
+                updateTextList();
+            }
+        }
+
+        function startDrag(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            isDragging = true;
+            const textElement = e.target.parentElement;
+            
+            const rect = textElement.getBoundingClientRect();
+            const containerRect = textOverlayContainer.getBoundingClientRect();
+            
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            
+            selectText(textElement.id);
+        }
+
+        function drag(e) {
+            if (!isDragging || !selectedTextId) return;
+            
+            const textElement = document.getElementById(selectedTextId);
+            if (!textElement) return;
+            
+            const containerRect = textOverlayContainer.getBoundingClientRect();
+            let x = e.clientX - containerRect.left - dragOffset.x;
+            let y = e.clientY - containerRect.top - dragOffset.y;
+            
+            // Keep within bounds
+            x = Math.max(0, Math.min(x, containerRect.width - textElement.offsetWidth));
+            y = Math.max(0, Math.min(y, containerRect.height - textElement.offsetHeight));
+            
+            textElement.style.left = x + 'px';
+            textElement.style.top = y + 'px';
+            textElement.style.right = '';
+            textElement.style.bottom = '';
+            textElement.style.transform = 'none';
+            
+            // Update controls
+            document.getElementById('textPosition').value = 'custom';
+            document.getElementById('posX').value = Math.round(x);
+            document.getElementById('posY').value = Math.round(y);
+            document.getElementById('customPosition').style.display = 'block';
+            
+            // Update stored data
+            const textData = textElements.find(t => t.id === selectedTextId);
+            if (textData) {
+                textData.x = x;
+                textData.y = y;
+                textData.position = 'custom';
+            }
+        }
+
+        function startResize(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            isResizing = true;
+            const textElement = e.target.parentElement;
+            selectText(textElement.id);
+            
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+        }
+
+        function resize(e) {
+            if (!isResizing || !selectedTextId) return;
+            
+            const textElement = document.getElementById(selectedTextId);
+            if (!textElement) return;
+            
+            const currentFontSize = parseInt(textElement.style.fontSize) || 24;
+            const newFontSize = Math.max(10, Math.min(72, currentFontSize + (e.movementY * -0.5)));
+            
+            textElement.style.fontSize = newFontSize + 'px';
+            document.getElementById('fontSize').value = newFontSize;
+            document.getElementById('fontSizeValue').textContent = newFontSize + 'px';
+            
+            // Update stored data
+            const textData = textElements.find(t => t.id === selectedTextId);
+            if (textData) {
+                textData.fontSize = newFontSize;
+            }
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        function stopResize() {
+            isResizing = false;
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+        }
+
+        function updateTimeDisplay() {
+            document.getElementById('currentTime').textContent = formatTime(videoElement.currentTime);
+            document.getElementById('duration').textContent = formatTime(videoElement.duration);
+            document.getElementById('startTimeDisplay').textContent = formatTime(videoElement.currentTime);
+            document.getElementById('endTimeDisplay').textContent = formatTime(videoElement.duration);
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function playPause() {
+            if (videoElement.paused) {
+                videoElement.play();
+            } else {
+                videoElement.pause();
+            }
+        }
+
+        function seekBackward() {
+            videoElement.currentTime = Math.max(0, videoElement.currentTime - 10);
+        }
+
+        function seekForward() {
+            videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + 10);
+        }
+
+        // Export function - handles video rendering with text overlays
+        document.getElementById('exportBtn').addEventListener('click', async function() {
+            const btn = this;
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Processing...';
+            btn.disabled = true;
+
+            try {
+                await exportVideoWithText();
+                btn.textContent = '✅ Export Complete!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            } catch (error) {
+                alert('Error: ' + error.message);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        async function exportVideoWithText() {
+            // Check if video is loaded
+            if (!videoElement.src) {
+                throw new Error('Please load a video first.');
+            }
+
+            console.log('=== STARTING EXPORT WITH TEXTS ===');
+            
+            // Step 1: Extract audio from video
+            console.log('Step 1: Extracting audio from video...');
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const mixedAudioBuffer = await extractAudioFromVideo(videoElement.src, audioContext);
+            console.log('✓ Audio extracted:', mixedAudioBuffer.duration, 's');
+            
+            // Step 2: Render video with texts and combine with audio
+            console.log('Step 2: Rendering video and combining with audio...');
+            await renderAndExportVideo(mixedAudioBuffer, audioContext);
+            console.log('✓ Export completed!');
+        }
+
+        async function extractAudioFromVideo(videoUrl, audioContext) {
+            return new Promise((resolve, reject) => {
+                const sourceVideoElement = document.createElement('video');
+                sourceVideoElement.src = videoUrl;
+                sourceVideoElement.crossOrigin = 'anonymous';
+                sourceVideoElement.style.display = 'none';
+                
+                let isResolved = false;
+                
+                sourceVideoElement.onloadedmetadata = async () => {
+                    try {
+                        const duration = sourceVideoElement.duration;
+                        const sampleRate = audioContext.sampleRate;
+                        const frameCount = Math.ceil(duration * sampleRate);
+                        
+                        // Create buffer to store audio
+                        const audioBuffer = audioContext.createBuffer(2, frameCount, sampleRate);
+                        
+                        // Create source from video element
+                        const source = audioContext.createMediaElementSource(sourceVideoElement);
+                        
+                        // Create processor to capture audio
+                        const scriptProcessor = audioContext.createScriptProcessor(4096, 2, 2);
+                        const buffers = [[], []];
+                        
+                        scriptProcessor.onaudioprocess = (e) => {
+                            for (let channel = 0; channel < 2; channel++) {
+                                const inputData = e.inputBuffer.getChannelData(channel);
+                                buffers[channel].push(...inputData);
+                            }
+                        };
+                        
+                        source.connect(scriptProcessor);
+                        scriptProcessor.connect(audioContext.destination);
+                        
+                        // Play video to capture audio
+                        const playPromise = sourceVideoElement.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => console.warn('Play error:', e.message));
+                        }
+                        
+                        // Wait for playback to end
+                        sourceVideoElement.onended = () => {
+                            if (isResolved) return;
+                            isResolved = true;
+                            
+                            // Copy captured data to buffer
+                            for (let channel = 0; channel < 2; channel++) {
+                                const channelData = audioBuffer.getChannelData(channel);
+                                const capturedData = buffers[channel];
+                                for (let i = 0; i < capturedData.length && i < frameCount; i++) {
+                                    channelData[i] = capturedData[i];
+                                }
+                            }
+                            
+                            // Cleanup
+                            source.disconnect();
+                            scriptProcessor.disconnect();
+                            if (document.body.contains(sourceVideoElement)) {
+                                document.body.removeChild(sourceVideoElement);
+                            }
+                            
+                            resolve(audioBuffer);
+                        };
+                        
+                        // Timeout in case video doesn't end properly
+                        setTimeout(() => {
+                            if (isResolved) return;
+                            if (sourceVideoElement.paused && sourceVideoElement.currentTime >= duration - 0.1) {
+                                sourceVideoElement.pause();
+                                sourceVideoElement.onended?.();
+                            }
+                        }, Math.ceil(duration * 1000) + 2000);
+                        
+                        if (!document.body.contains(sourceVideoElement)) {
+                            document.body.appendChild(sourceVideoElement);
+                        }
+                        
+                    } catch (error) {
+                        isResolved = true;
+                        if (document.body.contains(sourceVideoElement)) {
+                            document.body.removeChild(sourceVideoElement);
+                        }
+                        reject(error);
+                    }
+                };
+                
+                sourceVideoElement.onerror = (e) => {
+                    if (!isResolved) {
+                        isResolved = true;
+                        if (document.body.contains(sourceVideoElement)) {
+                            document.body.removeChild(sourceVideoElement);
+                        }
+                        reject(new Error('Failed to load video'));
+                    }
+                };
+            });
+        }
+
+        async function renderAndExportVideo(mixedAudioBuffer, audioContext) {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Use the preview video element that's already working
+                    const sourceVideo = videoElement;
+                    
+                    // Check if video is loaded
+                    if (!sourceVideo.src || sourceVideo.videoWidth === 0) {
+                        reject(new Error('Video is not loaded correctly'));
+                        return;
+                    }
+                    
+                    console.log('✓ Using preview video:', sourceVideo.videoWidth, 'x', sourceVideo.videoHeight);
+                    
+                    // Create canvas for rendering
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = sourceVideo.videoWidth;
+                    canvas.height = sourceVideo.videoHeight;
+                    canvas.style.display = 'none';
+                    document.body.appendChild(canvas);
+                    
+                    // Get canvas stream (30fps)
+                    const canvasStream = canvas.captureStream(30);
+                    
+                    // Create audio stream from buffer
+                    const audioSource = audioContext.createBufferSource();
+                    audioSource.buffer = mixedAudioBuffer;
+                    
+                    const audioDestination = audioContext.createMediaStreamDestination();
+                    audioSource.connect(audioDestination);
+                    
+                    // Combine video and audio streams
+                    const combinedStream = new MediaStream([
+                        ...canvasStream.getVideoTracks(),
+                        ...audioDestination.stream.getAudioTracks()
+                    ]);
+                    
+                    // Record combined stream
+                    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+                        ? 'video/webm;codecs=vp9'
+                        : 'video/webm';
+                    
+                    const mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
+                    
+                    const chunks = [];
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) chunks.push(e.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/webm' });
+                        console.log('✓ File size:', (blob.size / 1024 / 1024).toFixed(2), 'MB');
+                        
+                        // Download
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'video_with_texts.webm';
+                        a.click();
+                        
+                        // Cleanup
+                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                        document.body.removeChild(canvas);
+                        sourceVideo.removeEventListener('play', onplayHandler);
+                        
+                        resolve();
+                    };
+                    
+                    mediaRecorder.onerror = (e) => {
+                        document.body.removeChild(canvas);
+                        sourceVideo.removeEventListener('play', onplayHandler);
+                        reject(new Error('Recording error: ' + e.error));
+                    };
+                    
+                    // Set up rendering when video starts playing
+                    const onplayHandler = () => {
+                        console.log('✓ Starting frame rendering...');
+                        console.log('📝 Total texts to render:', textElements.length);
+                        
+                        mediaRecorder.start();
+                        audioSource.start(0);
+                        
+                        console.log('\n=== STARTING RENDERING ===\n');
+                        
+                        let frameCount = 0;
+                        let textLogged = {};
+                        
+                        const drawFrame = () => {
+                            frameCount++;
+                            
+                            if (sourceVideo.paused || sourceVideo.ended) {
+                                console.log('\n✓ Video ended after', frameCount, 'frames');
+                                console.log('✓ Stopping recording...');
+                                mediaRecorder.stop();
+                                return;
+                            }
+                            
+                            const currentTime = sourceVideo.currentTime;
+                            
+                            // Draw video frame
+                            ctx.drawImage(sourceVideo, 0, 0, canvas.width, canvas.height);
+                            
+                            // Log every 30 frames
+                            if (frameCount % 30 === 0) {
+                                console.log(`Frame ${frameCount} - Time: ${currentTime.toFixed(2)}s`);
+                            }
+                            
+                            // ===== RENDER ALL TEXTS =====
+                            for (let i = 0; i < textElements.length; i++) {
+                                const textData = textElements[i];
+                                
+                                if (!textData) {
+                                    console.warn('Text index', i, 'not found');
+                                    continue;
+                                }
+                                
+                                const startTime = parseFloat(textData.startTime) || 0;
+                                const duration = parseFloat(textData.duration) || 5;
+                                const endTime = startTime + duration;
+                                
+                                // Check if text should be displayed in this frame
+                                if (currentTime >= startTime && currentTime < endTime) {
+                                    try {
+                                        // Get text position based on positioning mode
+                                        let x = textData.x || 0;
+                                        let y = textData.y || 0;
+                                        const textElement = textData.element;
+                                        
+                                        // Get video container dimensions for scaling/positioning
+                                        const videoContainer = document.querySelector('.video-container');
+                                        if (!videoContainer) continue;
+                                        
+                                        const containerWidth = videoContainer.clientWidth;
+                                        const containerHeight = videoContainer.clientHeight;
+                                        const canvasScaleX = canvas.width / containerWidth;
+                                        const canvasScaleY = canvas.height / containerHeight;
+                                        
+                                        // Handle different positioning modes
+                                        const position = textData.position || 'custom';
+                                        switch(position) {
+                                            case 'center':
+                                                x = (canvas.width - (textData.width || 100) * canvasScaleX) / 2;
+                                                y = (canvas.height - (textData.height || 30) * canvasScaleY) / 2;
+                                                break;
+                                            case 'top':
+                                                x = (canvas.width - (textData.width || 100) * canvasScaleX) / 2;
+                                                y = 20 * canvasScaleY;
+                                                break;
+                                            case 'bottom':
+                                                x = (canvas.width - (textData.width || 100) * canvasScaleX) / 2;
+                                                y = (canvas.height - (textData.height || 30) * canvasScaleY - 20);
+                                                break;
+                                            case 'top-left':
+                                                x = 20 * canvasScaleX;
+                                                y = 20 * canvasScaleY;
+                                                break;
+                                            case 'top-right':
+                                                x = canvas.width - (textData.width || 100) * canvasScaleX - 20 * canvasScaleX;
+                                                y = 20 * canvasScaleY;
+                                                break;
+                                            case 'bottom-left':
+                                                x = 20 * canvasScaleX;
+                                                y = canvas.height - (textData.height || 30) * canvasScaleY - 20 * canvasScaleY;
+                                                break;
+                                            case 'bottom-right':
+                                                x = canvas.width - (textData.width || 100) * canvasScaleX - 20 * canvasScaleX;
+                                                y = canvas.height - (textData.height || 30) * canvasScaleY - 20 * canvasScaleY;
+                                                break;
+                                            case 'custom':
+                                                // Use stored position
+                                                x = (textData.posX || textData.x || 0) * canvasScaleX;
+                                                y = (textData.posY || textData.y || 0) * canvasScaleY;
+                                                break;
+                                        }
+                                        
+                                        // Debug detailed logging on first frame of each text
+                                        if (!textLogged[i] && Math.abs(currentTime - startTime) < 0.1) {
+                                            console.log(`\n>>> RENDERING TEXT ${i+1}: "${textData.content}"`);
+                                            console.log(`    Video time: ${currentTime.toFixed(3)}s (start: ${startTime}s)`);
+                                            console.log(`    Position on canvas: x=${x.toFixed(0)}, y=${y.toFixed(0)}`);
+                                            console.log(`    Font: ${textData.fontStyle} ${textData.fontWeight} ${textData.fontSize}px`);
+                                            console.log(`    Color: ${textData.color}`);
+                                            textLogged[i] = true;
+                                        }
+                                        
+                                        const fontSize = parseFloat(textData.fontSize) || 24;
+                                        const fontWeight = textData.fontWeight || 'normal';
+                                        const fontStyle = textData.fontStyle || 'normal';
+                                        const color = textData.color || '#ffffff';
+                                        const fontFamily = 'Arial';
+                                        
+                                        // Set up context
+                                        ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
+                                        ctx.fillStyle = color;
+                                        ctx.textAlign = 'left';
+                                        ctx.textBaseline = 'top';
+                                        
+                                        // Add shadow
+                                        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                                        ctx.shadowBlur = 6;
+                                        ctx.shadowOffsetX = 2;
+                                        ctx.shadowOffsetY = 2;
+                                        
+                                        // Render text
+                                        const content = textData.content || '';
+                                        ctx.fillText(content, x, y);
+                                        
+                                    } catch (error) {
+                                        console.error(`Error rendering text ${i}:`, error.message);
+                                    }
+                                }
+                            }
+                            
+                            // Reset shadow
+                            ctx.shadowColor = 'transparent';
+                            
+                            // Next frame
+                            requestAnimationFrame(drawFrame);
+                        };
+                        
+                        drawFrame();
+                    };
+                    
+                    // Add listener
+                    sourceVideo.addEventListener('play', onplayHandler);
+                    
+                    // Start playback
+                    console.log('✓ Starting video playback...');
+                    sourceVideo.currentTime = 0;
+                    sourceVideo.play().catch(reject);
+                    
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
