@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Camada_1" data-name="Camada 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 20px;
+      }
+
+      .cls-1, .cls-2 {
+        font-family: Arial-BoldMT, Arial;
+        font-weight: 700;
+        isolation: isolate;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        fill: url(#Gradiente_sem_nome);
+      }
+
+      .cls-5 {
+        fill: url(#Gradiente_sem_nome_2);
+      }
+
+      .cls-2 {
+        font-size: 24px;
+      }
+
+      .cls-6 {
+        fill: lime;
+      }
+
+      .cls-7 {
+        fill: blue;
+      }
+
+      .cls-8 {
+        fill: rgba(255, 255, 255, .2);
+      }
+
+      .cls-9 {
+        fill: rgba(255, 255, 255, .95);
+      }
+
+      .cls-10 {
+        fill: none;
+        stroke: url(#Gradiente_sem_nome_3);
+        stroke-linecap: round;
+        stroke-width: 8px;
+      }
+
+      .cls-11 {
+        fill: red;
+      }
+
+      .cls-12 {
+        fill: #10b981;
+      }
+    </style>
+    <linearGradient id="Gradiente_sem_nome" data-name="Gradiente sem nome" x1="-43.92" y1="555.92" x2="555.92" y2="-43.92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset=".5" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="Gradiente_sem_nome_2" data-name="Gradiente sem nome 2" x1="-1.04" y1="511.7" x2="-.04" y2="510.7" gradientTransform="translate(208 57524) scale(96 -112)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset=".5" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="Gradiente_sem_nome_3" data-name="Gradiente sem nome 3" x1="-.5" y1="511.4" x2=".5" y2="510.4" gradientTransform="translate(400 16568) scale(32 -32)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset=".5" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect class="cls-4" width="512" height="512"/>
+  <g>
+    <rect class="cls-8" x="80" y="155.24" width="320" height="200" rx="24" ry="24"/>
+    <rect class="cls-9" x="80" y="155.24" width="320" height="200" rx="24" ry="24"/>
+    <path class="cls-5" d="M120,199.24l96,56-96,56v-112Z"/>
+    <text class="cls-1" transform="translate(168 349.24)"><tspan x="0" y="0">VIDEO</tspan></text>
+    <g>
+      <path class="cls-12" d="M228,294.66h120c11.05,0,20,8.95,20,20h0c0,11.05-8.95,20-20,20h-120c-11.05,0-20-8.95-20-20h0c0-11.05,8.95-20,20-20Z"/>
+      <text class="cls-2" transform="translate(257.33 323.82)"><tspan x="0" y="0">TEXT</tspan></text>
+    </g>
+    <circle class="cls-3" cx="400" cy="219.24" r="32"/>
+    <path class="cls-10" d="M400,203.24v32M384,219.24h32"/>
+    <g>
+      <circle class="cls-7" cx="356" cy="184.3" r="12"/>
+      <circle class="cls-6" cx="327.87" cy="195.92" r="12"/>
+      <circle class="cls-11" cx="352.26" cy="214.17" r="12"/>
+    </g>
+  </g>
+</svg>
